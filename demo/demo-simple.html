@@ -35,17 +35,7 @@
     <script src="../ion-affix.js"></script>
 
     <script>
-
-        angular.module('ion-affix-demo', ['ionic', 'ion-affix'])
-                .controller('demoController', function ($scope) {
-                    $scope.groups = [];
-                    for (var i = 0; i < 100; i++) {
-                        $scope.groups.push(i);
-                    }
-
-                    $scope.items = [0, 1, 2, 3];
-                });
-
+        angular.module('ion-affix-demo', ['ion-affix']);
     </script>
 
 </head>
@@ -56,25 +46,32 @@
 </ion-header-bar>
 
 <!-- or <ion-scroll> -->
-<ion-content scroll-event-interval="5" ng-controller="demoController">
-    <div>
-        <div ng-repeat="group in groups">
-            <div class="group-list">
-                <div class="list">
-                    <div class="item item-divider" ion-affix data-affix-within-parent-with-class="group-list">
-                        Group {{group}}
-                        <span class="badge badge-royal">{{n}}</span>
-                    </div>
-                    <div class="card" ng-repeat="item in items">
-                        <div class="item item-text-wrap">
-                            Card {{item}}
-                            <br/>
-                            This is a basic Card which contains an item that has wrapping text.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<ion-content scroll-event-interval="5">
+    <div class="list">
+        <div class="item item-divider" ion-affix data-affix-within-parent-with-class="list">Group 0</div>
+        <div class="item item-text-wrap">Item 0</div>
+        <div class="item item-text-wrap">Item 1</div>
+        <div class="item item-text-wrap">Item 2</div>
+        <div class="item item-text-wrap">Item 3</div>
+        <div class="item item-text-wrap">Item 4</div>
+    </div>
+
+    <div class="list">
+        <div class="item item-divider" ion-affix data-affix-within-parent-with-class="list">Group 1</div>
+        <div class="item item-text-wrap">Item 0</div>
+        <div class="item item-text-wrap">Item 1</div>
+        <div class="item item-text-wrap">Item 2</div>
+        <div class="item item-text-wrap">Item 3</div>
+        <div class="item item-text-wrap">Item 4</div>
+    </div>
+
+    <div class="list">
+        <div class="item item-divider" ion-affix data-affix-within-parent-with-class="list">Group 2</div>
+        <div class="item item-text-wrap">Item 0</div>
+        <div class="item item-text-wrap">Item 1</div>
+        <div class="item item-text-wrap">Item 2</div>
+        <div class="item item-text-wrap">Item 3</div>
+        <div class="item item-text-wrap">Item 4</div>
     </div>
 </ion-content>
 </body>
