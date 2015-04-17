@@ -22,88 +22,178 @@
  * THE SOFTWARE.
  */
 
-// Gist https://gist.github.com/colllin/1a0c3a91cc641d8e578f
-.directive('affixWithinContainer', function($document, $ionicScrollDelegate) {
+angular.module('ion-affix', ['ionic'])
+    .directive('ionAffix', ['$ionicPosition', function ($ionicPosition) {
 
-    var transition = function(element, dy, executeImmediately) {
-        element.style[ionic.CSS.TRANSFORM] == 'translate3d(0, -' + dy + 'px, 0)' ||
-        executeImmediately ?
-            element.style[ionic.CSS.TRANSFORM] = 'translate3d(0, -' + dy + 'px, 0)' :
-            ionic.requestAnimationFrame(function() {
-                element.style[ionic.CSS.TRANSFORM] = 'translate3d(0, -' + dy + 'px, 0)';
-            });
-    };
+        // keeping the Ionic specific stuff separated so that they can be changed and used within an other context
 
-    return {
-        restrict: 'A',
-        require: '^$ionicScroll',
-        link: function($scope, $element, $attr, $ionicScroll) {
-            var $affixContainer = $element.closest($attr.affixWithinContainer) || $element.parent();
+        // see https://api.jquery.com/closest/ and http://ionicframework.com/docs/api/utility/ionic.DomUtil/
+        function getParentWithClass(elementSelector, parentClass) {
+            return angular.element(ionic.DomUtil.getParentWithClass(elementSelector[0], parentClass));
+        }
 
-            var top = 0;
-            var height = 0;
-            var scrollMin = 0;
-            var scrollMax = 0;
-            var scrollTransition = 0;
-            var affixedHeight = 0;
-            var updateScrollLimits = _.throttle(function(scrollTop) {
-                top = $affixContainer.offset().top;
-                height = $affixContainer.outerHeight(false);
-                affixedHeight = $element.outerHeight(false);
-                scrollMin = scrollTop + top;
-                scrollMax = scrollMin + height;
-                scrollTransition = scrollMax - affixedHeight;
-            }, 500, {
-                trailing: false
-            });
+        // see http://underscorejs.org/#throttle
+        function throttle(theFunction) {
+            return ionic.Utils.throttle(theFunction);
+        }
 
-            var affix = null;
-            var unaffix = null;
-            var $affixedClone = null;
-            var setupAffix = function() {
-                unaffix = null;
-                affix = function() {
-                    $affixedClone = $element.clone().css({
-                        position: 'fixed',
+        // see http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/
+        // see http://ionicframework.com/docs/api/utility/ionic.DomUtil/
+        function requestAnimationFrame(callback) {
+            return ionic.requestAnimationFrame(callback);
+        }
+
+        // see https://api.jquery.com/offset/
+        // see http://ionicframework.com/docs/api/service/$ionicPosition/
+        function offset(elementSelector) {
+            return $ionicPosition.offset(elementSelector);
+        }
+
+        // see https://api.jquery.com/position/
+        // see http://ionicframework.com/docs/api/service/$ionicPosition/
+        function position(elementSelector){
+            return $ionicPosition.position(elementSelector);
+        }
+
+        function applyTransform(element, transformString) {
+            // do not apply the transformation if it is already applied
+            if (element.style[ionic.CSS.TRANSFORM] == transformString) {
+            }
+            else {
+                element.style[ionic.CSS.TRANSFORM] = transformString;
+            }
+        }
+
+        function translateUp(element, dy, executeImmediately) {
+            var translateDyPixelsUp = dy == 0 ? 'translate3d(0px, 0px, 0px)' : 'translate3d(0px, -' + dy + 'px, 0px)';
+            // if immediate execution is requested, then just execute immediately
+            // if not, execute in the animation frame.
+            if (executeImmediately) {
+                applyTransform(element, translateDyPixelsUp);
+            }
+            else {
+                // see http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/
+                // see http://ionicframework.com/docs/api/utility/ionic.DomUtil/
+                requestAnimationFrame(function () {
+                    applyTransform(element, translateDyPixelsUp);
+                });
+            }
+        }
+
+        var CALCULATION_THROTTLE_MS = 500;
+
+        return {
+            // only allow adding this directive to elements as an attribute
+            restrict: 'A',
+            // we need $ionicScroll for adding the clone of affix element to the scroll container
+            // $ionicScroll.element gives us that
+            require: '^$ionicScroll',
+            link: function ($scope, $element, $attr, $ionicScroll) {
+                // get the affix's container. element will be affix for that container.
+                // affix's container will be matched by "affix-within-parent-with-class" attribute.
+                // if it is not provided, parent element will be assumed as the container
+                var $container;
+                if ($attr.affixWithinParentWithClass) {
+                    $container = getParentWithClass($element, $attr.affixWithinParentWithClass);
+                    if (!$container) {
+                        $container = $element.parent();
+                    }
+                }
+                else {
+                    $container = $element.parent();
+                }
+
+                var scrollMin = 0;
+                var scrollMax = 0;
+                var scrollTransition = 0;
+                // calculate the scroll limits for the affix element and the affix's container
+                var calculateScrollLimits = function (scrollTop) {
+                    var containerPosition = position($container);
+                    var elementOffset = offset($element);
+
+                    var containerTop = containerPosition.top;
+                    var containerHeight = containerPosition.height;
+
+                    var affixHeight = elementOffset.height;
+
+                    scrollMin = scrollTop + containerTop;
+                    scrollMax = scrollMin + containerHeight;
+                    scrollTransition = scrollMax - affixHeight;
+                };
+                // throttled version of the same calculation
+                var throttledCalculateScrollLimits = throttle(
+                    calculateScrollLimits,
+                    CALCULATION_THROTTLE_MS,
+                    {trailing: false}
+                );
+
+                var affixClone = null;
+
+                // creates the affix clone and adds it to DOM. by default it is put to top
+                var createAffixClone = function () {
+                    var clone = $element.clone().css({
+                        position: 'absolute',
                         top: 0,
                         left: 0,
                         right: 0
                     });
-                    $($ionicScroll.element).append($affixedClone);
 
-                    setupUnaffix();
-                };
-            };
-            var cleanupAffix = function() {
-                $affixedClone && $affixedClone.remove();
-                $affixedClone = null;
-            };
-            var setupUnaffix = function() {
-                affix = null;
-                unaffix = function() {
-                    cleanupAffix();
-                    setupAffix();
-                };
-            };
-            $scope.$on('$destroy', cleanupAffix);
-            setupAffix();
-
-            var affixedJustNow;
-            var scrollTop;
-            $($ionicScroll.element).on('scroll', function(event) {
-                scrollTop = (event.detail || event.originalEvent && event.originalEvent.detail).scrollTop;
-                updateScrollLimits(scrollTop);
-                if (scrollTop >= scrollMin && scrollTop <= scrollMax) {
-                    affixedJustNow = affix ? affix() || true : false;
-                    if (scrollTop > scrollTransition) {
-                        transition($affixedClone[0], Math.floor(scrollTop-scrollTransition), affixedJustNow);
-                    } else {
-                        transition($affixedClone[0], 0, affixedJustNow);
+                    // if directive is given an additional CSS class to apply to the clone, then apply it
+                    if ($attr.affixClass) {
+                        clone.addClass($attr.affixClass);
                     }
-                } else {
-                    unaffix && unaffix();
-                }
-            });
+
+                    angular.element($ionicScroll.element).append(clone);
+
+                    return clone;
+                };
+
+                // removes the affix clone from DOM. also deletes the reference to it in the memory.
+                var removeAffixClone = function () {
+                    if (affixClone)
+                        affixClone.remove();
+                    affixClone = null;
+                };
+
+                $scope.$on('$destroy', removeAffixClone);
+
+
+                angular.element($ionicScroll.element).on('scroll', function (event) {
+                    var scrollTop = (event.detail || event.originalEvent && event.originalEvent.detail).scrollTop;
+                    // when scroll to top, we should always execute the immediate calculation.
+                    // this is because of some weird problem which is hard to describe.
+                    // if you want to experiment, always use the throttled one and just click on the page
+                    // you will see all affix elements stacked on top
+                    if (scrollTop == 0) {
+                        calculateScrollLimits(scrollTop);
+                    }
+                    else {
+                        throttledCalculateScrollLimits(scrollTop);
+                    }
+
+                    // when we scrolled to the container, create the clone of element and place it on top
+                    if (scrollTop >= scrollMin && scrollTop <= scrollMax) {
+
+                        // we need to track if we created the clone just now
+                        // that is important since normally we apply the transforms in the animation frame
+                        // but, we need to apply the transform immediately when we add the element for the first time. otherwise it is too late!
+                        var cloneCreatedJustNow = false;
+                        if (!affixClone) {
+                            affixClone = createAffixClone();
+                            cloneCreatedJustNow = true;
+                        }
+
+                        // if we're reaching towards the end of the container, apply some nice translation to move up/down the clone
+                        // but if we're reached already to the container and we're far away than the end, move clone to top
+                        if (scrollTop > scrollTransition) {
+                            translateUp(affixClone[0], Math.floor(scrollTop - scrollTransition), cloneCreatedJustNow);
+                        } else {
+                            translateUp(affixClone[0], 0, cloneCreatedJustNow);
+                        }
+                    } else {
+                        removeAffixClone();
+                    }
+                });
+            }
         }
-    }
-});
+    }]);
