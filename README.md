@@ -1,13 +1,26 @@
 # ion-affix
-ion-affix is a small Angular directive for Ionic framework to have sticky affix elements.
+**ion-affix** is a small Angular directive for Ionic framework to have sticky affix elements.
 
 Directive requires no additional dependencies. Just Ionic and Angular.
- 
-TODO: demo
-TODO: code sample 
+
+Initial idea is [this gist](https://gist.github.com/colllin/1a0c3a91cc641d8e578f) of [Collin Donahue-Oponski](https://github.com/colllin)
+
+## Demos
+
+**For demos and documentation, see the [project page](http://www.aliok.com.tr/projects/2015-04-17-ion-sticky.html).**
+
+## Usage
+
+**For demos and documentation, see the [project page](http://www.aliok.com.tr/projects/2015-04-17-ion-sticky.html).**
 
 
-Initial idea is this gist <https://gist.github.com/colllin/1a0c3a91cc641d8e578f>.
+
+### Extend || Contribute
+* Clone the repo
+* Issue command `gulp`
+* Check if the demos are working : <http://localhost:3000>
+* I would appreciate if someone spends time and introduces E2E testing
+
 
 # License
 
