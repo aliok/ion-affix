@@ -162,7 +162,14 @@ angular.module('ion-affix', ['ionic'])
                     affixClone = null;
                 };
 
-                $scope.$on('$destroy', removeAffixClone);
+                $scope.$on("$destroy",function() {
+                    // 2 important things on destroy:
+                    // remove the clone
+                    // unbind the scroll listener
+                    // see https://github.com/aliok/ion-affix/issues/1
+                    removeAffixClone();
+                    angular.element($ionicScroll.element).off('scroll');
+                });
 
 
                 angular.element($ionicScroll.element).on('scroll', function (event) {
