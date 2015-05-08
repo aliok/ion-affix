@@ -30,7 +30,7 @@
 
 
 angular.module('ion-affix', ['ionic'])
-    .directive('ionAffix', ['$ionicPosition', function ($ionicPosition) {
+    .directive('ionAffix', ['$ionicPosition', '$compile', function ($ionicPosition, $compile) {
 
         // keeping the Ionic specific stuff separated so that they can be changed and used within an other context
 
@@ -58,7 +58,7 @@ angular.module('ion-affix', ['ionic'])
 
         // see https://api.jquery.com/position/
         // see http://ionicframework.com/docs/api/service/$ionicPosition/
-        function position(elementSelector){
+        function position(elementSelector) {
             return $ionicPosition.position(elementSelector);
         }
 
@@ -150,7 +150,13 @@ angular.module('ion-affix', ['ionic'])
                         clone.addClass($attr.affixClass);
                     }
 
+                    // remove the directive matching attribute from the clone, so that an affix is not created for the clone as well.
+                    clone.removeAttr('ion-affix').removeAttr('data-ion-affix').removeAttr('x-ion-affix');
+
                     angular.element($ionicScroll.element).append(clone);
+
+                    // compile the clone so that anything in it is in Angular lifecycle.
+                    $compile(clone)($scope);
 
                     return clone;
                 };
@@ -162,7 +168,7 @@ angular.module('ion-affix', ['ionic'])
                     affixClone = null;
                 };
 
-                $scope.$on("$destroy",function() {
+                $scope.$on("$destroy", function () {
                     // 2 important things on destroy:
                     // remove the clone
                     // unbind the scroll listener
