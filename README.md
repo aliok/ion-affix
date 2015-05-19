@@ -27,6 +27,7 @@ Initial idea is [this gist](https://gist.github.com/colllin/1a0c3a91cc641d8e578f
 * Update version in `package.json`
 * Update version and date in `ion-affix.js` file header
 * Git tag the version and push it
+* Update version info mentioned above to `next.version.number-SNAPSHOT
 * Update the project code asset in `aliok.github.io`
 * Update the showcases (codepen.io)
 * Tweet about the update
