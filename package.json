@@ -1,6 +1,6 @@
 {
   "name": "ion-affix",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Sticky affix elements for Ionic framework",
   "main": "ion-affix.js",
   "scripts": {

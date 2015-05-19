@@ -23,8 +23,8 @@
  */
 
 // ------ ion-affix ---------
-// version 1.0.0
-// date 2015-04-17
+// version 1.0.1
+// date 2015-05-19
 // ion-affix is a lightweight Angular directive for Ionic framework to have sticky affix elements.
 // see project page : http://www.aliok.com.tr/projects/2015-04-17-ion-affix.html
 
