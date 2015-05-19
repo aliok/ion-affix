@@ -22,6 +22,17 @@ Initial idea is [this gist](https://gist.github.com/colllin/1a0c3a91cc641d8e578f
 * I would appreciate if someone spends time and introduces E2E testing
 
 
+### Release process
+* Update version in `bower.json`
+* Update version in `package.json`
+* Update version and date in `ion-affix.js` file header
+* Git tag the version and push it
+* Update the project code asset in `aliok.github.io`
+* Update the showcases (codepen.io)
+* Tweet about the update
+* Write answers to places like `aliok.github.io` Disqus and Ionic forum
+* New post in Ionic forum with new demos
+
 # License
 
     The MIT License (MIT)
