@@ -1,9 +1,9 @@
-# STATUS
+#### STATUS
 
 
-### This project is not maintained anymore. We cancelled our free-time hobby project with Ionic because of too much changed recently in our personal lives and we don't have enough time at all.
+##### This project is not maintained anymore. We cancelled our free-time hobby project with Ionic because of too much changed recently in our personal lives and we don't have enough time at all.
 
-### I would be happy to reference anyone who would fork the project and maintain it.
+##### I would be happy to reference anyone who would fork the project and maintain it.
 
 
 # ion-affix
